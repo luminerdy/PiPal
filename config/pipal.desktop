@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=PiPal Eyes
+Comment=Fullscreen eyes with local camera tracking
+Exec=/absolute/path/to/PiPal/run.sh
+TryExec=/absolute/path/to/PiPal/run.sh
+Terminal=false

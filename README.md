@@ -9,7 +9,8 @@ pupil position using a local OpenCV frontal-face detector. Good lighting and a
 reasonably close, forward-facing person work best. Full-body detection, speech,
 and an AI agent are not implemented. The USB speaker arrives later.
 
-No camera frames or audio are recorded or uploaded. No automatic startup is set.
+No camera frames or audio are recorded or uploaded. Desktop autostart is installed
+for the tested desktop account.
 See docs/HARDWARE.md for actual verification and outstanding checks.
 
 ## Run
@@ -47,6 +48,45 @@ there are several cameras, inspect them and select one with `--camera PATH`.
 Horizontal mirroring is enabled by default after the user tested this placement.
 `--capture-width`, `--capture-height`, and `--detect-hz` adjust performance. Start
 with the tested 640x480 capture and 10 Hz maximum detection rate.
+
+## Desktop autostart
+
+`~/.config/autostart/pipal.desktop` launches `run.sh` once when the desktop user logs into
+the desktop, inheriting its display environment. Escape closes the eyes for the
+rest of that session; there is no restart loop. To start again manually, run
+`~/PiPal/run.sh` from a desktop terminal after closing any existing instance.
+Ctrl+C also stops a foreground launch.
+
+The tested Pi already boots to `graphical.target` with LightDM active and configured
+with `user-session=rpd-labwc` and automatic login for the desktop account. That existing automatic
+desktop login is the prerequisite for starting the eyes after power-on.
+The entry and a manual launch in the current desktop were tested; a full reboot
+or fresh-login test has not been performed.
+
+Disable future autostart (then press Escape to close any running eyes):
+
+```sh
+mv ~/.config/autostart/pipal.desktop ~/.config/autostart/pipal.desktop.disabled
+```
+
+Re-enable by moving that file back to `pipal.desktop`. The reusable example is
+`config/pipal.desktop`; adjust both absolute paths if the checkout moves or the
+account changes. To install it, first replace `/absolute/path/to/PiPal` in the example with your checkout's
+absolute path (desktop entries do not expand `~` or `$HOME`). Then back up an
+existing entry and copy:
+
+```sh
+mkdir -p ~/.config/autostart
+if [ -e ~/.config/autostart/pipal.desktop ]; then
+    cp -p ~/.config/autostart/pipal.desktop ~/.config/autostart/pipal.desktop.bak-"$(date +%Y%m%d%H%M%S)"
+fi
+install -m 644 config/pipal.desktop ~/.config/autostart/pipal.desktop
+desktop-file-validate ~/.config/autostart/pipal.desktop
+```
+
+This changes only per-user desktop startup. If the camera is unavailable, PiPal
+exits with an error; fix the device and start it manually. A later desktop login
+tries again. Startup output follows the desktop session's normal logging.
 
 ## Dependencies
 

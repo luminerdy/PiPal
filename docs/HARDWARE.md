@@ -62,8 +62,41 @@ arrangement have not been physically inspected.
 The fullscreen tracker is left running under the desktop account. Escape closes it. From a desktop
 terminal use `cd ~/PiPal` then `./run.sh` to restart. SSH session settings and all
 options are in README.md. Operational logs are in ignored `data/tracking.log`;
-the stability samples are in `data/stability.log`. No auto-start service exists.
+the stability samples are in `data/stability.log`. Per-user desktop autostart is
+now installed as described below; no system service or restart loop was added.
 A temporary HDMI screenshot was used to verify the eyes rendering; camera frames
 were never saved or transferred. No account secrets were copied into this project.
 
 Recheck device/session choices after hardware, desktop, or OS changes.
+
+## Desktop autostart (2026-09-11)
+
+- Rechecked `systemctl get-default`: `graphical.target`; LightDM was active.
+  `/etc/lightdm/lightdm.conf` has `user-session=rpd-labwc` and
+  automatic login for the desktop account. Session 1 was active, Wayland, desktop rpd-labwc.
+  This existing automatic desktop login is the power-on startup prerequisite;
+  no display-manager or boot settings were changed.
+- `/etc/xdg/labwc/autostart` invokes `lxsession-xdg-autostart`. No per-user
+  autostart directory or running PiPal process existed before this setup.
+- Installed `config/pipal.desktop` as `~/.config/autostart/pipal.desktop`, mode
+  644. The installed file passed desktop-file-validate.
+  It executes the checkout's `run.sh` directly, inheriting session variables.
+  The public example uses a placeholder path that must be customized.
+- Manually launched the installed entry using `gio launch` with display-related
+  environment values from the running desktop panel. The C920 opened and SDL
+  reported X11 (Xwayland in this Wayland session), 1920x1080, fullscreen=True.
+  No display environment overrides are embedded in the entry. Operational test
+  output is in ignored `data/autostart-test.log`.
+- Three ten-second intervals reported 23.2-25.0 rendering FPS, 8.0-8.3 detection
+  Hz, and 25 face-positive passes in total, with no runtime error. A host process
+  check found exactly one PiPal instance, left running after the test.
+- Escape still follows the existing application quit path. The entry has no
+  respawn setting: closing it leaves it stopped until a manual start or the next
+  desktop login. Start manually with `~/PiPal/run.sh` in a desktop terminal;
+  Ctrl+C stops a foreground launch. Disable future startup by renaming
+  `~/.config/autostart/pipal.desktop` to `pipal.desktop.disabled`, then close
+  running eyes with Escape. Rename it back to re-enable.
+- Validation covers entry syntax and manual launch in the actual graphical
+  session, not a fresh login or reboot. Neither logout nor reboot was performed.
+  Physical appearance and Escape were not newly confirmed by the user this turn;
+  earlier user confirmations and quit checks are recorded above.
