@@ -1,0 +1,5 @@
+# This Pi uses Debian system Python packages rather than pip wheels.
+# Install with apt as documented in README.md; pip -r is intentionally a no-op.
+# python3-pygame: 2.6.1-1+b2 (installed and tested)
+# python3-opencv: 4.10.0+dfsg-5 (installed and tested)
+# opencv-data: 4.10.0+dfsg-5 (installed; supplies the Haar face cascade)
